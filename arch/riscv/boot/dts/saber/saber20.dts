@@ -1,0 +1,15 @@
+
+/dts-v1/;
+
+#include "saber.dtsi"
+
+/ {
+	model = "saber20";
+	compatible = "saber,saber20";
+
+	chosen {
+		bootargs = "earlycon console=tvtty";
+		stdout-path = "serial0";
+	};
+};
+
