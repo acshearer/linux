@@ -42,27 +42,33 @@
 
     soc {
         #address-cells = <1>;
-        #size-cells = <1>;
+        #size-cells = <4>;
         compatible = "simple-bus";
 
         spi0: spi@10001000 {
             compatible = "saber,spi";
-			reg = <0x10001000 0x10>;
+			reg = <0x10001000 0x4>;
         };
 
         scratch0: scratch@10002000 {
             compatible = "saber,scratch";
-			reg = <0x10003000 0x20>;
+			reg = <0x10003000 0x8>;
         };
 
         tv0: tv@10003000 {
             compatible = "saber,tv";
-			reg = <0x10003000 0x8>;
+			reg = <0x10003000 0x2>;
         };
 
-        uart0: serial@10004000 {
+        timer: timer@10004000 {
+            compatible = "saber,timer";
+			reg = <0x10004000 0x4>;
+            frequency = 
+        }
+
+        uart0: serial@10005000 {
 			compatible = "saber,uart";
-			reg = <0x10004000 0x1000>;
+			reg = <0x10004000 0x400>;
 		};
         
     };
