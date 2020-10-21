@@ -3,5 +3,11 @@ export ARCH=riscv
 export CROSS_COMPILE=$RISCV_LINUX_TOOLCHAIN
 # Define cores in your shell RC file
 
-make saber_defconfig -j$CORES
-make -j$CORES
+if [ -z "$1" ]
+then
+    make saber_defconfig -j6 -j$CORES
+    make -j6 uImage -j$CORES uImage
+else
+    make saber_defconfig -j$CORES
+    make "$1"
+fi
