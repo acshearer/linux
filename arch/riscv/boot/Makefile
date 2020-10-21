@@ -14,15 +14,27 @@
 # Based on the ia64 and arm64 boot/Makefile.
 #
 
+#KCOV_INSTRUMENT := n
+
 OBJCOPYFLAGS_Image :=-O binary -R .note -R .note.gnu.build-id -R .comment -S
 
-targets := Image loader
+targets := Image loader uImage
 
 $(obj)/Image: vmlinux FORCE
 	$(call if_changed,objcopy)
 
 $(obj)/Image.gz: $(obj)/Image FORCE
 	$(call if_changed,gzip)
+
+ifneq ($(LOADADDR),)
+  UIMAGE_LOADADDR=$(LOADADDR)
+else
+    UIMAGE_LOADADDR="0x80080000"
+endif
+
+$(obj)/uImage:	$(obj)/Image FORCE
+	@$(check_for_multiple_loadaddr)
+	$(call if_changed,uimage)
 
 $(obj)/loader.o: $(src)/loader.S $(obj)/Image
 
