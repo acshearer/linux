@@ -1,8 +1,7 @@
 #!/usr/bin/env sh
-export ARCH=riscv
-export CROSS_COMPILE=$RISCV_LINUX_TOOLCHAIN
 # Define cores in your shell RC file
 
+source envsetup
 if [ -z "$1" ]
 then
     make saber_defconfig -j6 -j$CORES
