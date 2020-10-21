@@ -6,7 +6,7 @@ export CROSS_COMPILE=$RISCV_LINUX_TOOLCHAIN
 if [ -z "$1" ]
 then
     make saber_defconfig -j6 -j$CORES
-    make -j6 uImage -j$CORES uImage
+    make -j6 uImage -j$CORES
 else
     make saber_defconfig -j$CORES
     make "$1"
