@@ -49,7 +49,5 @@ config SOC_KENDRYTE_K210_DTB_BUILTIN
 config SOC_SABER
        bool "Builtin device tree for SABER"
        select OF
-       select BUILTIN_DTB
        select SOC_SABER_DTB
-       select RISCV_M_MODE
 endmenu
