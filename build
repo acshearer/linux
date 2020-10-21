@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # Define cores in your shell RC file
 
-source envsetup
+source ./envsetup
 if [ -z "$1" ]
 then
     make saber_defconfig -j6 -j$CORES
