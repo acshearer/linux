@@ -295,6 +295,16 @@ config RISCV_ISA_C
 
 	   If you don't know what to do here, say Y.
 
+config RISCV_ISA_MULTDIV
+	bool "Enable MULTDIV extension"
+	default y
+	help
+	   Adds "M" to the ISA subsets that the toolchain is allowed to emit
+	   when building Linux, which results multiply and divide
+	   instructins in the Linux binary.
+
+	   If you don't know what to do here, say Y.
+
 menu "supported PMU type"
 	depends on PERF_EVENTS
 

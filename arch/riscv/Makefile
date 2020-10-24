@@ -37,8 +37,25 @@ else
 endif
 
 # ISA string setting
-riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ima
+riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ia
 riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
+
+# TODO: Make this work properly, for now break other platforms
+#ifeq ($(CONFIG_ARCH_RV32I),y)
+#	ifeq ($(CONFIG_RISCV_ISA_MULTDIV),y)
+#	riscv-march-$(CONFIG_ARCH_RV32I) := rv32ima
+#else
+#	riscv-march-$(CONFIG_ARCH_RV32I) := rv32ia
+#endif
+#	endif
+#
+#ifeq ($(CONFIG_ARCH_RV64I),y)
+#	ifeq ($(CONFIG_RISCV_ISA_MULTDIV),y)
+#	riscv-march-$(CONFIG_RISCV_RV64I) := rv64ima
+#else
+#	riscv-march-$(CONFIG_RISCV_RV64I) := rv64ia
+#endif
+#	endif
 riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
 riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
 KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
