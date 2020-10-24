@@ -50,4 +50,5 @@ config SOC_SABER
        bool "Builtin device tree for SABER"
        select OF
        select SOC_SABER_DTB
+       select GENERIC_LIB_MULDI3
 endmenu
