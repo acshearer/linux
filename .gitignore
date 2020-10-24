@@ -55,6 +55,7 @@ modules.order
 /TAGS
 /linux
 /vmlinux
+/vmlinux.objdump
 /vmlinux.32
 /vmlinux.symvers
 /vmlinux-gdb.py

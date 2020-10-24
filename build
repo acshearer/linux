@@ -10,3 +10,4 @@ else
     make saber_defconfig -j$CORES
     make "$1"
 fi
+${CROSS_COMPILE}objdump -d vmlinux > vmlinux.objdump
