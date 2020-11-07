@@ -29,7 +29,7 @@ $(obj)/Image.gz: $(obj)/Image FORCE
 ifneq ($(LOADADDR),)
   UIMAGE_LOADADDR=$(LOADADDR)
 else
-    UIMAGE_LOADADDR="0x81000000"
+  UIMAGE_LOADADDR="0x80400000"
 endif
 
 $(obj)/uImage:	$(obj)/Image FORCE
