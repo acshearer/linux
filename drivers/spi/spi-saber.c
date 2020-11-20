@@ -47,16 +47,15 @@ MODULE_DESCRIPTION(DRIVER_DESC);
 static void write8(u8 val, void __iomem *addr) {
     iowrite8(val, addr);
 }
+static u8 read8(void __iomem *addr) {
+    return ioread8(addr);
+}
 
 struct saber_spi {
-    struct resource *res;
-
-    void __iomem regData;
-    void __iomem regStatus;
-    void __iomem regConfig;
-    void __iomem regChipSelect;
-
-	struct device *dev;
+    void __iomem *regData;
+    void __iomem *regStatus;
+    void __iomem *regConfig;
+    void __iomem *regChipSelect;
 };
 
 static void saber_spi_start(struct spi_master *master) {
@@ -76,16 +75,15 @@ static int saber_spi_transfer(struct spi_master *master,
     struct saber_spi *hw = spi_master_get_devdata(master);
     int bits_per_word = t->bits_per_word;
     int i = 0;
+    int length = t->len;
+    
+    const unsigned char* tx = t->tx_buf;
+    unsigned char* rx = t->rx_buf;
 
     if(bits_per_word != 8){
-        dev_warn(&pdev->dev, "Unsupported number of bits per word: %d\n", bits_per_word);
+        printk("Saber SPI Error: Unsupported number of bits per word: %d\n", bits_per_word);
         return 0;
     }
-
-    int length = t->len;
-
-    const unsigned char tx = t->tx_buf;
-    unsigned char rx = t->rx_buf;
 
     for(i = 0; i < length; i++){
         write8(tx[i], hw->regData);
@@ -110,7 +108,8 @@ static int saber_spi_probe(struct platform_device *pdev) {
     struct spi_master *master;
     struct saber_spi *hw;
     int err;
-
+    struct resource *res;
+    void __iomem *base;
 
     master = spi_alloc_master(&pdev->dev, sizeof(struct saber_spi));
 	if (!master)
@@ -131,30 +130,29 @@ static int saber_spi_probe(struct platform_device *pdev) {
 
 
     // setup io register addresses
-    struct resource *res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+    res = platform_get_resource(pdev, IORESOURCE_REG, 0);
 
-    void __iomem base = ioremap(res->start, resource_size(res));
+    base = ioremap(res->start, resource_size(res));
 
-    master->regData =       base + SPI_REG_DATA;
-    master->regStatus =     base + SPI_REG_STATUS;
-    master->regConfig =     base + SPI_REG_CONFIG;
-    master->regChipSelect = base + SPI_REG_CHIP_SELECT;
 
-    // Link the spi controller to the driver data
     hw = spi_master_get_devdata(master);
-	hw->dev = &pdev->dev;
+
+    hw->regData =       base + SPI_OFFSET_DATA;
+    hw->regStatus =     base + SPI_OFFSET_STATUS;
+    hw->regConfig =     base + SPI_OFFSET_CONFIG;
+    hw->regChipSelect = base + SPI_OFFSET_CHIP_SELECT;
 
     err = devm_spi_register_master(&pdev->dev, master);
     if(err){
         return err;
     }
 
-    if (!spi_new_device(master, )){
-        dev_warn(&pdev->dev, "failed to create saber SPI device\n");
-        return -ENODEV;
-    }
+    // if (!spi_new_device(master, )){
+    //     dev_warn(&pdev->dev, "failed to create saber SPI device\n");
+    //     return -ENODEV;
+    // }
 
-    spi_master_put(master)
+    spi_master_put(master);
 
     saber_spi_start(master);
 
@@ -163,7 +161,7 @@ static int saber_spi_probe(struct platform_device *pdev) {
 
 
 static const struct of_device_id saber_spi_match[] = {
-	{ .compatible = "saber,spi" },
+	{ .compatible = "saber,saber-spi" },
 	{0}
 };
 MODULE_DEVICE_TABLE(of, saber_spi_match);
