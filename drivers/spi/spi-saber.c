@@ -108,13 +108,11 @@ static int saber_spi_probe(struct platform_device *pdev) {
     struct spi_master *master;
     struct saber_spi *hw;
     int err;
-    struct resource *res;
     void __iomem *base;
 
     master = spi_alloc_master(&pdev->dev, sizeof(struct saber_spi));
 	if (!master)
 		return -ENOMEM;
-
 
     master->bus_num = pdev->id;
     
@@ -128,12 +126,11 @@ static int saber_spi_probe(struct platform_device *pdev) {
 	master->transfer_one = saber_spi_transfer;
 	master->set_cs = saber_spi_set_cs;
 
-
     // setup io register addresses
-    res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-
-    base = ioremap(res->start, resource_size(res));
-
+    base = devm_platform_ioremap_resource(pdev, 0);
+    if (IS_ERR(base)) {
+		return PTR_ERR(base);
+	}
 
     hw = spi_master_get_devdata(master);
 
@@ -147,11 +144,6 @@ static int saber_spi_probe(struct platform_device *pdev) {
         return err;
     }
 
-    // if (!spi_new_device(master, )){
-    //     dev_warn(&pdev->dev, "failed to create saber SPI device\n");
-    //     return -ENODEV;
-    // }
-
     spi_master_put(master);
 
     saber_spi_start(master);
@@ -162,7 +154,7 @@ static int saber_spi_probe(struct platform_device *pdev) {
 
 static const struct of_device_id saber_spi_match[] = {
 	{ .compatible = "saber,saber-spi" },
-	{0}
+	{}
 };
 MODULE_DEVICE_TABLE(of, saber_spi_match);
 
