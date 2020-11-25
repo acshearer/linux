@@ -70,26 +70,38 @@ static void saber_spi_start(struct spi_master *master) {
 
 
 static int saber_spi_transfer(struct spi_master *master, 
-                           struct spi_device *spi, 
-                           struct spi_transfer *t) {
+                              struct spi_device *spi, 
+                              struct spi_transfer *t) {
+
     struct saber_spi *hw = spi_master_get_devdata(master);
     int bits_per_word = t->bits_per_word;
-    int i = 0;
+    int i;
     int length = t->len;
     
     const unsigned char* tx = t->tx_buf;
     unsigned char* rx = t->rx_buf;
 
     if(bits_per_word != 8){
-        printk("Saber SPI Error: Unsupported number of bits per word: %d\n", bits_per_word);
+        pr_err("Saber SPI Error: Unsupported number of bits per word: %d\n", bits_per_word);
         return 0;
     }
 
     for(i = 0; i < length; i++){
-        write8(tx[i], hw->regData);
-        while(!(read8(hw->regStatus) & SPI_SPIF));
-        rx[i] = read8(hw->regData);
+
+        unsigned char data_write = tx ? tx[i] : 0xff;
+
+        write8(data_write, hw->regData);
+
+        while(!(read8(hw->regStatus) & SPI_SPIF)){
+        }
+
+        unsigned char data_read = read8(hw->regData);
+
+        if(rx){
+            rx[i] = data_read;
+        }
     }
+    spi_finalize_current_transfer(master);
 
     return i;
 }
