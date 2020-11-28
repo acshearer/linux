@@ -21,6 +21,7 @@
 
 extern unsigned long kgdb_compiled_break;
 
+#ifdef CONFIG_RISCV_ISA_C
 static inline void arch_kgdb_breakpoint(void)
 {
 	asm(".global kgdb_compiled_break\n"
@@ -28,6 +29,13 @@ static inline void arch_kgdb_breakpoint(void)
 	    "kgdb_compiled_break: ebreak\n"
 	    ".option rvc\n");
 }
+#else
+static inline void arch_kgdb_breakpoint(void)
+{
+	asm(".global kgdb_compiled_break\n"
+	    "kgdb_compiled_break: ebreak\n");
+}
+#endif
 
 #endif /* !__ASSEMBLY__ */
 
